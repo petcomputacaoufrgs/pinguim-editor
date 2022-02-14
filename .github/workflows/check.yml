@@ -1,0 +1,16 @@
+name: Pinguim Editor CI - Check
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+      - name: Checkout node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' 
+      - npm install
+      - npm test
