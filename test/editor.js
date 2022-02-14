@@ -59,6 +59,19 @@ describe('Editor', function () {
         });
     });
 
+    describe('#updateLineColumn', function () {
+        it('updates after move', function () {
+
+            const params = makeEditorParams();
+            const editor = new Editor(params);
+
+            editor.edit('foo\nbar');
+
+            assert.equal(params.currLineSpan.textContent, '2');
+            assert.equal(params.currColumnSpan.textContent, '4');
+        });
+    });
+
     describe('#syncScrolls()', function () {
         it('sync after desync', function () {
             const params = makeEditorParams();
