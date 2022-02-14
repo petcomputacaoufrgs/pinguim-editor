@@ -3,7 +3,48 @@ import { History, HistoryError } from './history.js';
 
 export { Highlighter };
 
+/**
+ * @class Editor implements the whole editor logic.
+ */
 export class Editor {
+    /**
+     * @constructor Constructs an editor from given customization.
+     * 
+     * @param {object} params an object in the following format:
+     *                        {
+     *                            // Optional if running in a browser
+     *                            document: Document,
+     *                            // Element where the user writes code into. 
+     *                            targetTextArea: HTMLTextAreaElement,
+     *                            // Element where code is displayed highlighted.
+     *                            targetTextPre: HTMLPreElement,
+     *                            // Element where line number is displayed.
+     *                            currLineSpan: HTMLSpanElement,
+     *                            // Element where column number is displayed.
+     *                            currColumnSpan: HTMLSpanElement,
+     *                            // Highlighter created with desired rules.
+     *                            highlighter: Highlighter,
+     *                            // A function that saves source code in some
+     *                            // storage.
+     *                            saveCode: function(string) -> (),
+     *                            // A function that loads source code from some
+     *                            // storage.
+     *                            loadCode: function() -> string,
+     *                            // A function that saves history data in some
+     *                            // storage.
+     *                            saveCodeHist: function(object) -> (),
+     *                            // A function that loads history data from
+     *                            // some storage.
+     *                            loadCodeHist: function() -> object
+     *                                              throws SyntaxError,
+     *                            // A function that handles key events for
+     *                            // custom behaviour.
+     *                            handleKey: function(Editor, KeyboardEvent)
+     *                                          -> (),
+     *                            // History limit. Optional, default 5000.
+     *                            historyLimit: number.
+     *                        }
+     */
     constructor(params) {
         this.document = params.document || document;
         this.targetTextArea = params.targetTextArea;
@@ -42,44 +83,102 @@ export class Editor {
         });
     }
 
+    /**
+     * @private for this class.
+     * 
+     * @method refreshPrevState refreshes previous cached state of input.
+     */
     refreshPrevState() {
         this.prevState.selectionStart = this.targetTextArea.selectionStart;
         this.prevState.selectionEnd = this.targetTextArea.selectionEnd;
         this.prevState.content = this.targetTextArea.value;
     }
 
+    /**
+     * @private for this class.
+     * 
+     * @method updateContent updates input content and refershes interal state.
+     * 
+     * @param {string} content new content.
+     */
     updateContent(content) {
         this.targetTextArea.value = content;
         this.refreshContent();
     }
 
+    /**
+     * @returns The user input contents.
+     */
     get content() {
         return this.targetTextArea.value;
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method redo Redoes the current undone action, if any.
+     */
     redo() {
         this.history.redo(this.targetTextArea);
         this.refreshContent();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method redo Undoes an the previous action in history, if any.
+     */
     undo() {
         this.history.undo(this.targetTextArea);
         this.refreshContent();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method addToHistory adds an action to code history.
+     * 
+     * @param {object} action action in the source code in the format:
+     *                        { start:number, oldText:string, newText:string }
+     */
     addToHistory(action) {
         this.history.add(action);
         this.saveHistory();
     }
 
+
+    /**
+     * @private to this class
+     * 
+     * @method apply applies an action to the source code.
+     * 
+     * @param {object} action action in the source code in the format:
+     *                        { start:number, oldText:string, newText:string }
+     */
     apply(action) {
         this.history.apply(action, this.targetTextArea);
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method apply applies an action to the source code in reverse:
+     *                  oldText becomes newText and vice-versa.
+     * 
+     * @param {object} action action in the source code in the format:
+     *                        { start:number, oldText:string, newText:string }
+     */
     applyRev(action) {
         this.history.applyRev(action, this.targetTextArea);
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method edit Edits currently selected text (even if empty).
+     * 
+     * @param {string} newText text replacing selected text.
+     */
     edit(newText) {
         const start = this.targetTextArea.selectionStart;
         const end = this.targetTextArea.selectionEnd;
@@ -91,6 +190,12 @@ export class Editor {
         this.refreshContent();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method load Loads code and its history from load functions. If history
+     *              data is invalid, it is resetted.
+     */
     load() {
         this.targetTextArea.value = this.loadCode() || '';
         try {
@@ -105,19 +210,39 @@ export class Editor {
         this.refreshContent();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method resetHistory resets history and then saves it.
+     */
     resetHistory() {
         this.history.reset();
         this.saveHistory();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method saveContent saves the code content using save function.
+     */
     saveContent() {
         this.saveCode(this.targetTextArea.value);
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method saveHistory saves code history using save function.
+     */
     saveHistory() {
         this.saveCodeHist(this.history.export());
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method highlight highlights source code.
+     */
     highlight() {
         this.highlighter.highlight(
             this.targetTextArea,
@@ -126,15 +251,30 @@ export class Editor {
         );
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method syncScroll synchronizes display'scroll with input's scroll.
+     */
     syncScroll() {
         this.targetPre.scrollTop = this.targetTextArea.scrollTop;
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method refreshPosition refreshes state affected by position change.
+     */
     refreshPosition() {
         this.syncScroll();
         this.updateLineColumn();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method refreshContent refreshes state affected by any content change.
+     */
     refreshContent() {
         this.refreshPrevState();
         this.highlight();
@@ -142,6 +282,11 @@ export class Editor {
         this.saveContent();
     }
 
+    /**
+     * @private to this class
+     * 
+     * @method updateLineColumn updates display of line and column numbers.
+     */
     updateLineColumn() {
         const position = this.targetTextArea.selectionStart;
         const prevText = this.targetTextArea.value.substring(0, position);
@@ -158,6 +303,11 @@ export class Editor {
         this.currColumnSpan.textContent = column;
     }
 
+    /**
+     * @private to this class
+     * 
+     * @returns whether the cursor is between '{}'.
+     */
     isBetweenCurlies() {
         const start = this.targetTextArea.selectionStart;
         return (
@@ -167,6 +317,11 @@ export class Editor {
         );
     }
 
+    /**
+     * @private to this class
+     * 
+     * @returns whether the cursor is between '[]'.
+     */
     isBetweenSquares() {
         const start = this.targetTextArea.selectionStart;
         return (
@@ -176,6 +331,11 @@ export class Editor {
         );
     }
 
+    /**
+     * @private to this class
+     * 
+     * @returns whether the cursor is between '()'.
+     */
     isBetweenParens() {
         const start = this.targetTextArea.selectionStart;
         return (
@@ -184,6 +344,8 @@ export class Editor {
             && this.targetTextArea.value[start] == ')'
         );
     }
+
+    /********** EVENT HANDLERS **********/
 
     handleUserEdit(evt) {
         evt.preventDefault();
