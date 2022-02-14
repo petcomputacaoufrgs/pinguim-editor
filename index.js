@@ -39,7 +39,7 @@ export class Editor {
      *                                              throws SyntaxError,
      *                            // A function that handles key events for
      *                            // custom behaviour.
-     *                            handleKey: function(Editor, KeyboardEvent)
+     *                            handleKey: function(KeyboardEvent, Editor)
      *                                          -> (),
      *                            // History limit. Optional, default 5000.
      *                            historyLimit: number.
@@ -448,6 +448,6 @@ export class Editor {
             singleKeyMap[evt.key](evt);
         }
 
-        this.externalHandleKey(this, evt);
+        this.externalHandleKey(evt, this);
     }
 }
