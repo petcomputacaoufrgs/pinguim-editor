@@ -395,6 +395,18 @@ describe('Editor', function () {
         });
     });
 
+    describe("#set content(value)", function () {
+        it('should correctly set and save', function () {
+            const params = makeEditorParams();
+            const editor = new Editor(params);
+            editor.content = '\\x. x';
+            assert.equal(editor.content, '\\x. x');
+            assert.equal(editor.selectionStart, 5);
+            assert.equal(editor.selectionEnd, 5);
+            assert.equal(params.loadCode(), '\\x. x');
+        });
+    });
+
     function makeEditorParams() {
         const dom = new JSDOM(
             '<!DOCTYPE html>'
