@@ -11,8 +11,8 @@ describe('Editor', function () {
 
             editor.edit(' cond');
             assert.equal(editor.content, 'if cond then a else b');
-            assert.equal(params.targetTextArea.selectionStart, 7);
-            assert.equal(params.targetTextArea.selectionEnd, 7);
+            assert.equal(editor.selectionStart, 7);
+            assert.equal(editor.selectionEnd, 7);
             assert.equal(params.loadCode(), 'if cond then a else b');
         });
 
@@ -23,8 +23,8 @@ describe('Editor', function () {
 
             editor.edit('');
             assert.equal(editor.content, 'if then else b');
-            assert.equal(params.targetTextArea.selectionStart, 8);
-            assert.equal(params.targetTextArea.selectionEnd, 8);
+            assert.equal(editor.selectionStart, 8);
+            assert.equal(editor.selectionEnd, 8);
             assert.equal(params.loadCode(), 'if then else b');
         });
 
@@ -35,8 +35,8 @@ describe('Editor', function () {
 
             editor.edit('banana');
             assert.equal(editor.content, 'if then banana else b');
-            assert.equal(params.targetTextArea.selectionStart, 14);
-            assert.equal(params.targetTextArea.selectionEnd, 14);
+            assert.equal(editor.selectionStart, 14);
+            assert.equal(editor.selectionEnd, 14);
             assert.equal(params.loadCode(), 'if then banana else b');
         });
 
@@ -46,8 +46,8 @@ describe('Editor', function () {
 
             editor.edit('banana');
             assert.equal(editor.content, 'bananaif then a else b');
-            assert.equal(params.targetTextArea.selectionStart, 6);
-            assert.equal(params.targetTextArea.selectionEnd, 6);
+            assert.equal(editor.selectionStart, 6);
+            assert.equal(editor.selectionEnd, 6);
             assert.equal(params.loadCode(), 'bananaif then a else b');
 
             const TextType = params.window.Text;
@@ -82,8 +82,8 @@ describe('Editor', function () {
 
             editor.edit('banana');
             assert.equal(editor.content, 'bananaif then a else b');
-            assert.equal(params.targetTextArea.selectionStart, 6);
-            assert.equal(params.targetTextArea.selectionEnd, 6);
+            assert.equal(editor.selectionStart, 6);
+            assert.equal(editor.selectionEnd, 6);
             assert.equal(params.loadCode(), 'bananaif then a else b');
             assert.equal(params.targetTextArea.scrollTop, 0);
             assert.equal(params.targetPre.scrollTop, 0);
@@ -104,8 +104,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'ifc then a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'ifc then a else b');
             });
         });
@@ -123,8 +123,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'ifcen a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'ifcen a else b');
             });
         });
@@ -142,8 +142,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if hen a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'if hen a else b');
             });
         });
@@ -162,8 +162,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if tn a else b');
-                assert.equal(params.targetTextArea.selectionStart, 4);
-                assert.equal(params.targetTextArea.selectionEnd, 4);
+                assert.equal(editor.selectionStart, 4);
+                assert.equal(editor.selectionEnd, 4);
                 assert.equal(params.loadCode(), 'if tn a else b');
             });
         });
@@ -181,8 +181,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if ten a else b');
-                assert.equal(params.targetTextArea.selectionStart, 4);
-                assert.equal(params.targetTextArea.selectionEnd, 4);
+                assert.equal(editor.selectionStart, 4);
+                assert.equal(editor.selectionEnd, 4);
                 assert.equal(params.loadCode(), 'if ten a else b');
             });
         });
@@ -200,8 +200,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if tn a else b');
-                assert.equal(params.targetTextArea.selectionStart, 4);
-                assert.equal(params.targetTextArea.selectionEnd, 4);
+                assert.equal(editor.selectionStart, 4);
+                assert.equal(editor.selectionEnd, 4);
                 assert.equal(params.loadCode(), 'if tn a else b');
             });
         });
@@ -220,8 +220,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if() then a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'if() then a else b');
             });
         });
@@ -240,8 +240,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if[] then a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'if[] then a else b');
             });
         });
@@ -260,8 +260,8 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'if{} then a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'if{} then a else b');
             });
         });
@@ -279,13 +279,13 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'ifcen a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'ifcen a else b');
                 editor.undo();
                 assert.equal(editor.content, 'if then a else b');
-                assert.equal(params.targetTextArea.selectionStart, 5);
-                assert.equal(params.targetTextArea.selectionEnd, 5);
+                assert.equal(editor.selectionStart, 5);
+                assert.equal(editor.selectionEnd, 5);
                 assert.equal(params.loadCode(), 'if then a else b');
             });
         });
@@ -309,15 +309,15 @@ describe('Editor', function () {
 
             setImmediate(() => {
                 assert.equal(editor.content, 'ifcden a else b');
-                assert.equal(params.targetTextArea.selectionStart, 4);
-                assert.equal(params.targetTextArea.selectionEnd, 4);
+                assert.equal(editor.selectionStart, 4);
+                assert.equal(editor.selectionEnd, 4);
                 assert.equal(params.loadCode(), 'ifcden a else b');
                 editor.undo();
                 editor.undo();
                 editor.redo();
                 assert.equal(editor.content, 'ifcen a else b');
-                assert.equal(params.targetTextArea.selectionStart, 3);
-                assert.equal(params.targetTextArea.selectionEnd, 3);
+                assert.equal(editor.selectionStart, 3);
+                assert.equal(editor.selectionEnd, 3);
                 assert.equal(params.loadCode(), 'ifcen a else b');
             });
         });
@@ -339,8 +339,8 @@ describe('Editor', function () {
 
                 setImmediate(() => {
                     assert.equal(editor.content, 'if then a else b');
-                    assert.equal(params.targetTextArea.selectionStart, 2);
-                    assert.equal(params.targetTextArea.selectionEnd, 2);
+                    assert.equal(editor.selectionStart, 2);
+                    assert.equal(editor.selectionEnd, 2);
                     assert.equal(params.loadCode(), 'if then a else b');
                 });
             });
@@ -363,8 +363,8 @@ describe('Editor', function () {
 
                 setImmediate(() => {
                     assert.equal(editor.content, 'if then a else b');
-                    assert.equal(params.targetTextArea.selectionStart, 2);
-                    assert.equal(params.targetTextArea.selectionEnd, 2);
+                    assert.equal(editor.selectionStart, 2);
+                    assert.equal(editor.selectionEnd, 2);
                     assert.equal(params.loadCode(), 'if then a else b');
                 });
             });
@@ -387,8 +387,8 @@ describe('Editor', function () {
 
                 setImmediate(() => {
                     assert.equal(editor.content, 'if then a else b');
-                    assert.equal(params.targetTextArea.selectionStart, 2);
-                    assert.equal(params.targetTextArea.selectionEnd, 2);
+                    assert.equal(editor.selectionStart, 2);
+                    assert.equal(editor.selectionEnd, 2);
                     assert.equal(params.loadCode(), 'if then a else b');
                 });
             });

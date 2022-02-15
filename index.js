@@ -89,9 +89,9 @@ export class Editor {
      * @method refreshPrevState refreshes previous cached state of input.
      */
     refreshPrevState() {
-        this.prevState.selectionStart = this.targetTextArea.selectionStart;
-        this.prevState.selectionEnd = this.targetTextArea.selectionEnd;
-        this.prevState.content = this.targetTextArea.value;
+        this.prevState.selectionStart = this.selectionStart;
+        this.prevState.selectionEnd = this.selectionEnd;
+        this.prevState.content = this.content;
     }
 
     /**
@@ -101,8 +101,8 @@ export class Editor {
      * 
      * @param {string} content new content.
      */
-    updateContent(content) {
-        this.targetTextArea.value = content;
+    set content(value) {
+        this.targetTextArea.value = value;
         this.refreshContent();
     }
 
@@ -111,6 +111,47 @@ export class Editor {
      */
     get content() {
         return this.targetTextArea.value;
+    }
+
+    /**
+     * @returns The start position of user input contents' selection.
+     */
+    get selectionStart() {
+        return this.targetTextArea.selectionStart;
+    }
+
+    /**
+     * @returns The end position of user input contents' selection.
+     */
+    get selectionEnd() {
+        return this.targetTextArea.selectionEnd;
+    }
+
+    /**
+     * @param {number} value The new selection start.
+     */
+    set selectionStart(value) {
+        this.changeSelection(value, this.selectionEnd);
+    }
+
+    /**
+     * @param {number} value The new selection end.
+     */
+    set selectionEnd(value) {
+        this.changeSelection(this.selectionStart, value);
+    }
+
+    /**
+     * @method changeSelection Sets selection start and end, then refreshes
+     *                          internal state.
+     * 
+     * @param {number} start The new selection start.
+     * @param {number} end The new selection end.
+     */
+    changeSelection(start, end) {
+        this.targetTextArea.selectionStart = start;
+        this.targetTextArea.selectionEnd = end;
+        this.refreshContent();
     }
 
     /**
@@ -180,9 +221,9 @@ export class Editor {
      * @param {string} newText text replacing selected text.
      */
     edit(newText) {
-        const start = this.targetTextArea.selectionStart;
-        const end = this.targetTextArea.selectionEnd;
-        const oldText = this.targetTextArea.value.substring(start, end);
+        const start = this.selectionStart;
+        const end = this.selectionEnd;
+        const oldText = this.content.substring(start, end);
         const action = { start, oldText, newText };
 
         this.apply(action);
@@ -197,7 +238,6 @@ export class Editor {
      *              data is invalid, it is resetted.
      */
     load() {
-        this.targetTextArea.value = this.loadCode() || '';
         try {
             this.history.import(this.loadCodeHist());
         } catch (error) {
@@ -207,7 +247,7 @@ export class Editor {
                 throw error;
             }
         }
-        this.refreshContent();
+        this.content = this.loadCode() || '';
     }
 
     /**
@@ -226,7 +266,7 @@ export class Editor {
      * @method saveContent saves the code content using save function.
      */
     saveContent() {
-        this.saveCode(this.targetTextArea.value);
+        this.saveCode(this.content);
     }
 
     /**
@@ -288,8 +328,8 @@ export class Editor {
      * @method updateLineColumn updates display of line and column numbers.
      */
     updateLineColumn() {
-        const position = this.targetTextArea.selectionStart;
-        const prevText = this.targetTextArea.value.substring(0, position);
+        const position = this.selectionStart;
+        const prevText = this.content.substring(0, position);
         let line = 1;
         for (const ch of prevText) {
             if (ch == '\n') {
@@ -309,11 +349,11 @@ export class Editor {
      * @returns whether the cursor is between '{}'.
      */
     isBetweenCurlies() {
-        const start = this.targetTextArea.selectionStart;
+        const start = this.selectionStart;
         return (
             start > 0
-            && this.targetTextArea.value[start - 1] == '{'
-            && this.targetTextArea.value[start] == '}'
+            && this.content[start - 1] == '{'
+            && this.content[start] == '}'
         );
     }
 
@@ -323,11 +363,11 @@ export class Editor {
      * @returns whether the cursor is between '[]'.
      */
     isBetweenSquares() {
-        const start = this.targetTextArea.selectionStart;
+        const start = this.selectionStart;
         return (
             start > 0
-            && this.targetTextArea.value[start - 1] == '['
-            && this.targetTextArea.value[start] == ']'
+            && this.content[start - 1] == '['
+            && this.content[start] == ']'
         );
     }
 
@@ -337,11 +377,11 @@ export class Editor {
      * @returns whether the cursor is between '()'.
      */
     isBetweenParens() {
-        const start = this.targetTextArea.selectionStart;
+        const start = this.selectionStart;
         return (
             start > 0
-            && this.targetTextArea.value[start - 1] == '('
-            && this.targetTextArea.value[start] == ')'
+            && this.content[start - 1] == '('
+            && this.content[start] == ')'
         );
     }
 
@@ -350,14 +390,14 @@ export class Editor {
     handleUserEdit(evt) {
         evt.preventDefault();
         const start = (
-            this.prevState.selectionStart > this.targetTextArea.selectionStart
-                ? this.targetTextArea.selectionStart
+            this.prevState.selectionStart > this.selectionStart
+                ? this.selectionStart
                 : this.prevState.selectionStart
         );
         const end = this.prevState.selectionEnd;
-        const newEnd = this.targetTextArea.selectionEnd;
+        const newEnd = this.selectionEnd;
         const oldText = this.prevState.content.substring(start, end);
-        const newText = this.targetTextArea.value.substring(start, newEnd);
+        const newText = this.content.substring(start, newEnd);
         const action = { start, oldText, newText };
 
         this.addToHistory(action);
@@ -376,8 +416,8 @@ export class Editor {
             || this.isBetweenParens()
         ) {
             evt.preventDefault();
-            this.targetTextArea.selectionStart--;
-            this.targetTextArea.selectionEnd++;
+            this.selectionStart--;
+            this.selectionEnd++;
             this.edit('');
         }
     }
@@ -385,22 +425,22 @@ export class Editor {
     handleParens(evt) {
         evt.preventDefault();
         this.edit('()');
-        this.targetTextArea.selectionStart--;
-        this.targetTextArea.selectionEnd--;
+        this.selectionStart--;
+        this.selectionEnd--;
     }
 
     handleSquare(evt) {
         evt.preventDefault();
         this.edit('[]');
-        this.targetTextArea.selectionStart--;
-        this.targetTextArea.selectionEnd--;
+        this.selectionStart--;
+        this.selectionEnd--;
     }
 
     handleCurly(evt) {
         evt.preventDefault();
         this.edit('{}');
-        this.targetTextArea.selectionStart--;
-        this.targetTextArea.selectionEnd--;
+        this.selectionStart--;
+        this.selectionEnd--;
     }
 
     handleCtrlZ(evt) {
