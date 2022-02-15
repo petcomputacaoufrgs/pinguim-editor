@@ -232,8 +232,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @method load Loads code and its history from load functions. If history
      *              data is invalid, it is resetted.
      */
