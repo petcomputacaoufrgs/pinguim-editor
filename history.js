@@ -30,13 +30,14 @@ export class History {
      *                          chopped-off in order to satisfy this limit.
      */
     constructor(limit) {
+        // Exclusive, always one-after the last valid entry.
         this.cursor = 0;
         this.entries = [];
         this.limit = limit || 5000;
     }
 
     /**
-     * @method redo Undoes a previously done action on the source code, if
+     * @method undo Undoes a previously done action on the source code, if
      *              the cursor is not at the beginning of history.
      * 
      * @param {HTMLTextAreaElement} target The element whose text will be
