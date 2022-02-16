@@ -50,26 +50,6 @@ describe('History', function () {
             );
         });
 
-        it('export a few items with cursor at middle', function () {
-            const target = getElement();
-            const history = new History();
-            history.add({ start: 4, oldText: '', newText: 'id' });
-            history.add({ start: 13, oldText: ';', newText: '' });
-            history.add({ start: 10, oldText: 'y', newText: 'x' });
-            history.undo(target);
-            assert.deepEqual(
-                history.export(),
-                {
-                    cursor: 2,
-                    entries: [
-                        { start: 4, oldText: '', newText: 'id' },
-                        { start: 13, oldText: ';', newText: '' },
-                        { start: 10, oldText: 'y', newText: 'x' },
-                    ],
-                }
-            );
-        });
-
         it('export nothing', function () {
             const history = new History();
             assert.deepEqual(

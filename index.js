@@ -56,7 +56,7 @@ export class Editor {
         this.loadCode = params.loadCode;
         this.saveCodeHist = params.saveCodeHist;
         this.loadCodeHist = params.loadCodeHist;
-        this.externalHandleKey = params.handleKey || (() => { });
+        this.customHandleKey = params.handleKey || (() => { });
         this.prevState = { selectionStart: 0, selectionEnd: 0, content: '' };
         this.history = new History(params.historyLimit);
 
@@ -95,10 +95,6 @@ export class Editor {
     }
 
     /**
-     * @private for this class.
-     * 
-     * @method updateContent updates input content and refershes interal state.
-     * 
      * @param {string} content new content.
      */
     set content(value) {
@@ -155,8 +151,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @method redo Redoes the current undone action, if any.
      */
     redo() {
@@ -165,8 +159,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @method redo Undoes an the previous action in history, if any.
      */
     undo() {
@@ -187,10 +179,7 @@ export class Editor {
         this.saveHistory();
     }
 
-
     /**
-     * @private to this class
-     * 
      * @method apply applies an action to the source code.
      * 
      * @param {object} action action in the source code in the format:
@@ -198,11 +187,10 @@ export class Editor {
      */
     apply(action) {
         this.history.apply(action, this.targetTextArea);
+        this.refreshContent();
     }
 
     /**
-     * @private to this class
-     * 
      * @method apply applies an action to the source code in reverse:
      *                  oldText becomes newText and vice-versa.
      * 
@@ -211,11 +199,10 @@ export class Editor {
      */
     applyRev(action) {
         this.history.applyRev(action, this.targetTextArea);
+        this.refreshContent();
     }
 
     /**
-     * @private to this class
-     * 
      * @method edit Edits currently selected text (even if empty).
      * 
      * @param {string} newText text replacing selected text.
@@ -226,9 +213,8 @@ export class Editor {
         const oldText = this.content.substring(start, end);
         const action = { start, oldText, newText };
 
-        this.apply(action);
         this.addToHistory(action);
-        this.refreshContent();
+        this.apply(action);
     }
 
     /**
@@ -249,8 +235,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @method resetHistory resets history and then saves it.
      */
     resetHistory() {
@@ -342,8 +326,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @returns whether the cursor is between '{}'.
      */
     isBetweenCurlies() {
@@ -356,8 +338,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @returns whether the cursor is between '[]'.
      */
     isBetweenSquares() {
@@ -370,8 +350,6 @@ export class Editor {
     }
 
     /**
-     * @private to this class
-     * 
      * @returns whether the cursor is between '()'.
      */
     isBetweenParens() {
@@ -384,6 +362,7 @@ export class Editor {
     }
 
     /********** EVENT HANDLERS **********/
+    /************* PRIVATE *************/
 
     handleUserEdit(evt) {
         evt.preventDefault();
@@ -486,6 +465,6 @@ export class Editor {
             singleKeyMap[evt.key](evt);
         }
 
-        this.externalHandleKey(evt, this);
+        this.customHandleKey(evt, this);
     }
 }
