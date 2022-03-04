@@ -436,6 +436,8 @@ export class Editor {
     }
 
     handleKey(evt) {
+        this.refreshPrevState();
+
         const singleKeyMap = {
             'Tab': evt => this.handleTab(evt),
             'Backspace': evt => this.handleBackspace(evt),
